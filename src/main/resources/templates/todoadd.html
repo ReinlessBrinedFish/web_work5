@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TodoAdd</title>
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- ajax 返回电话是否被注册的提示信息-->
+    <script>
+        function showHint(tel) {
+            $.ajax({
+                url: "/todo/ajax",
+                type: "GET",
+                data:{ "tel": tel },
+                success: function (result){
+                    if (result === "0") {
+                        // alert("存在相同的电话，请重新输入");
+                        $('#hint').text("电话已存在");
+                    } else {
+                        $('#hint').text("可以使用");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                    alert('新建或修改错误!');
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="./todolist.html" th:href="@{/todo/list}">Home</a></li>
+        <li class="breadcrumb-item active">Add</li>
+    </ol>
+    <form action="/todo/add" method="post" th:action="@{/todo/add}">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" oninput="check('name')" pattern=".+"
+                   placeholder="请输入姓名" required/>
+            <label for="telephone">Telephone:</label>
+            <input type="text" class="form-control" id="telephone" name="telephone" oninput="check('telephone')"
+                   pattern="[0-9]{6,11}" placeholder="请输入手机号" required onblur="showHint(this.value)"/>
+            <p> 提示信息: <span id="hint"></span></p>
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" oninput="check('email')"
+                   pattern="(\w-*\.*)+@(\w-?)+\.+(com|cn)+" placeholder="请输入邮箱" required/>
+            <label for="address">Address:</label>
+            <input type="text" class="form-control" id="address" name="address" oninput="check('address')"
+                   pattern=".+" placeholder="请输入住址" required/>
+            <label for="qq">QQ:</label>
+            <input type="text" class="form-control" id="qq" name="qq" oninput="check('qq')"
+                   pattern="[0-9]{6,10}" placeholder="请输入QQ号" required/>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<script>
+    function check(id) {
+        var elem = document.getElementById(id);         // 获取需要检查的标签元素
+        var content = elem.value;                       // 获取该标签内容
+        var pattern = elem.pattern;                     // 获取该标签已经设置好的正则匹配规则
+        var regex = new RegExp('^' + pattern + '$');    // 将pattern加上头尾标识
+        var match = regex.exec(content);                // 进行正则匹配
+
+        // 内容变为空
+        if (content === '') {
+            elem.innerHTML = "?";
+            elem.style.color = "#FFA500";
+        }
+        // 匹配成功
+        else if (null != match) {
+            elem.innerHTML = "√";
+            elem.style.color = "#00FF00";
+        }
+        // 匹配失败
+        else if (null == match)
+        {
+            elem.innerHTML = "×";
+            elem.style.color = "#FF0000";
+        }
+    }
+</script>
+</body>
+</html>
